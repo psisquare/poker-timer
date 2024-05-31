@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,21 +14,17 @@
             align-items: center;
             height: 100vh;
             margin: 0;
+            flex-direction: column;
         }
-
         .clock-container {
             text-align: center;
         }
-
         .timer {
             font-size: 10rem;
         }
-
-        .blinds,
-        .ante {
+        .blinds, .ante {
             font-size: 2rem;
         }
-
         .play-button {
             background: none;
             border: none;
@@ -37,7 +32,6 @@
             font-size: 4rem;
             cursor: pointer;
         }
-
         .settings {
             position: absolute;
             top: 10px;
@@ -45,15 +39,12 @@
             font-size: 1.5rem;
             text-decoration: none;
             color: white;
+            cursor: pointer;
         }
-
-        .nav-buttons,
-        .control-buttons {
+        .nav-buttons, .control-buttons {
             margin-top: 20px;
         }
-
-        .nav-buttons button,
-        .control-buttons button {
+        .nav-buttons button, .control-buttons button {
             background: none;
             border: 1px solid white;
             color: white;
@@ -62,20 +53,107 @@
             cursor: pointer;
             margin: 0 10px;
         }
-
-        .nav-buttons button:disabled,
-        .control-buttons button:disabled {
+        .nav-buttons button:disabled, .control-buttons button:disabled {
             border-color: grey;
             color: grey;
             cursor: not-allowed;
         }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: #333;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            color: white;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover, .close:focus {
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .settings-container {
+            width: 80%;
+            max-width: 800px;
+        }
+        .settings-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .settings-table th, .settings-table td {
+            border: 1px solid #555;
+            padding: 10px;
+            text-align: center;
+        }
+        .settings-table th {
+            background-color: #444;
+        }
+        .settings-table td input {
+            width: 80%;
+            padding: 5px;
+            color: #333;
+        }
+        .settings-table td button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .settings-table td button:disabled {
+            color: grey;
+            cursor: not-allowed;
+        }
+        .settings-actions {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .settings-actions button {
+            background: none;
+            border: 1px solid white;
+            color: white;
+            font-size: 1rem;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin: 0 10px;
+        }
+        .settings-actions button:disabled {
+            border-color: grey;
+            color: grey;
+            cursor: not-allowed;
+        }
+        .next-level-info {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.5rem;
+            text-align: center;
+        }
     </style>
 </head>
-
 <body>
-    <audio id="bellSound" src="bell.mp3"></audio>
     <div class="clock-container">
-        <a href="settings.html" class="settings">Settings</a>
+        <span class="settings" id="settingsButton">Settings</span>
         <h1 id="roundTitle">Level 1</h1>
         <div class="timer" id="timer">10:00</div>
         <div>
@@ -90,7 +168,43 @@
         <div class="control-buttons">
             <button id="resetButton">Reset Time</button>
         </div>
+        <div class="next-level-info" id="nextLevelInfo">
+            Next Level: Blinds 20/40, Ante 0
+        </div>
     </div>
+
+    <!-- The Modal -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeModal">&times;</span>
+            <div class="settings-container">
+                <h1>Settings</h1>
+                <table class="settings-table">
+                    <thead>
+                        <tr>
+                            <th>Level</th>
+                            <th>Small Blind</th>
+                            <th>Big Blind</th>
+                            <th>Ante</th>
+                            <th>Duration</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="settingsTableBody">
+                        <!-- Rows will be populated by JavaScript -->
+                    </tbody>
+                </table>
+                <div class="settings-actions">
+                    <button onclick="addNewLevel()">Add new level</button>
+                    <button onclick="addBreak()">Add break</button>
+                    <button onclick="saveSettings()">Save</button>
+                    <button onclick="closeSettingsModal()">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <audio id="bellSound" src="https://www.soundjay.com/button/sounds/button-10.mp3"></audio>
 
     <script>
         let timer;
@@ -107,6 +221,11 @@
         const prevButton = document.getElementById('prevButton');
         const nextButton = document.getElementById('nextButton');
         const resetButton = document.getElementById('resetButton');
+        const settingsButton = document.getElementById('settingsButton');
+        const settingsModal = document.getElementById('settingsModal');
+        const closeModal = document.getElementById('closeModal');
+        const bellSound = document.getElementById('bellSound');
+        const nextLevelInfo = document.getElementById('nextLevelInfo');
 
         function loadConfig() {
             config = JSON.parse(localStorage.getItem('pokerConfig')) || [
@@ -115,6 +234,7 @@
                 { level: 3, time: 600, smallBlind: 30, bigBlind: 60, ante: 10 }
             ];
             setLevel(0);
+            populateSettingsTable();
         }
 
         function setLevel(level) {
@@ -126,6 +246,7 @@
             blindsElement.textContent = `Blinds ${levelConfig.smallBlind}/${levelConfig.bigBlind}`;
             anteElement.textContent = `Ante ${levelConfig.ante}`;
             updateNavButtons();
+            updateNextLevelInfo();
         }
 
         function updateTimer() {
@@ -145,14 +266,17 @@
                         updateTimer();
                     } else {
                         clearInterval(timer);
-                        document.getElementById('bellSound').play();
+                        bellSound.play();
+                        if (currentLevel < config.length - 1) {
+                            setLevel(currentLevel + 1);
+                            toggleTimer();
+                        }
                     }
                 }, 1000);
                 playButton.textContent = '⏸️';
             }
             isRunning = !isRunning;
         }
-
 
         function updateNavButtons() {
             prevButton.disabled = currentLevel === 0;
@@ -186,7 +310,79 @@
             updateTimer();
         }
 
+        function openSettingsModal() {
+            settingsModal.style.display = "block";
+        }
 
+        function closeSettingsModal() {
+            settingsModal.style.display = "none";
+        }
+
+        function populateSettingsTable() {
+            const tableBody = document.getElementById('settingsTableBody');
+            tableBody.innerHTML = '';
+            config.forEach((levelConfig, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${levelConfig.level}</td>
+                    <td><input type="number" value="${levelConfig.smallBlind}" onchange="updateLevelConfig(${index}, 'smallBlind', this.value)"></td>
+                    <td><input type="number" value="${levelConfig.bigBlind}" onchange="updateLevelConfig(${index}, 'bigBlind', this.value)"></td>
+                    <td><input type="number" value="${levelConfig.ante}" onchange="updateLevelConfig(${index}, 'ante', this.value)"></td>
+                    <td><input type="number" value="${levelConfig.time / 60}" onchange="updateLevelConfig(${index}, 'time', this.value * 60)"> min</td>
+                    <td><button onclick="deleteLevel(${index})">❌</button></td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function updateLevelConfig(index, key, value) {
+            config[index][key] = parseInt(value, 10);
+            updateNextLevelInfo();
+        }
+
+        function addNewLevel() {
+            const newLevel = {
+                level: config.length + 1,
+                time: 600,
+                smallBlind: 10,
+                bigBlind: 20,
+                ante: 0
+            };
+            config.push(newLevel);
+            populateSettingsTable();
+        }
+
+        function addBreak() {
+            // Implement break functionality if required
+        }
+
+        function deleteLevel(index) {
+            config.splice(index, 1);
+            config.forEach((level, i) => level.level = i + 1); // Recalculate level numbers
+            populateSettingsTable();
+        }
+
+        function saveSettings() {
+            localStorage.setItem('pokerConfig', JSON.stringify(config));
+            alert('Settings saved!');
+        }
+
+        function updateNextLevelInfo() {
+            if (currentLevel < config.length - 1) {
+                const nextLevelConfig = config[currentLevel + 1];
+                nextLevelInfo.textContent = `Next Level: Blinds ${nextLevelConfig.smallBlind}/${nextLevelConfig.bigBlind}, Ante ${nextLevelConfig.ante}`;
+            } else {
+                nextLevelInfo.textContent = 'No more levels';
+            }
+        }
+
+        settingsButton.addEventListener('click', openSettingsModal);
+        closeModal.addEventListener('click', closeSettingsModal);
+        window.addEventListener('click', (event) => {
+            if (event.target == settingsModal) {
+                closeSettingsModal();
+            }
+        });
 
         playButton.addEventListener('click', toggleTimer);
         prevButton.addEventListener('click', prevLevel);
@@ -196,5 +392,4 @@
         loadConfig();
     </script>
 </body>
-
 </html>
