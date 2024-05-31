@@ -145,13 +145,7 @@
                         updateTimer();
                     } else {
                         clearInterval(timer);
-                        if (currentLevel < config.length - 1) {
-                            setLevel(currentLevel + 1);
-                            toggleTimer();
-                        } else {
-                            // Play bell sound when the last level finishes
-                            document.getElementById('bellSound').play();
-                        }
+                        document.getElementById('bellSound').play();
                     }
                 }, 1000);
                 playButton.textContent = '⏸️';
