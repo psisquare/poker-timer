@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Poker Clock</title>
+    <style>
+        body {
+            background-color: #333;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .settings-container {
+            width: 80%;
+            max-width: 800px;
+        }
+        .settings-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .settings-table th, .settings-table td {
+            border: 1px solid #555;
+            padding: 10px;
+            text-align: center;
+        }
+        .settings-table th {
+            background-color: #444;
+        }
+        .settings-table td input {
+            width: 80%;
+            padding: 5px;
+            color: #333;
+        }
+        .settings-table td button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .settings-table td button:disabled {
+            color: grey;
+            cursor: not-allowed;
+        }
+        .settings-actions {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .settings-actions button {
+            background: none;
+            border: 1px solid white;
+            color: white;
+            font-size: 1rem;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin: 0 10px;
+        }
+        .settings-actions button:disabled {
+            border-color: grey;
+            color: grey;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="settings-container">
+        <h1>Settings</h1>
+        <table class="settings-table">
+            <thead>
+                <tr>
+                    <th>Level</th>
+                    <th>Small Blind</th>
+                    <th>Big Blind</th>
+                    <th>Ante</th>
+                    <th>Duration</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="settingsTableBody">
+                <!-- Rows will be populated by JavaScript -->
+            </tbody>
+        </table>
+        <div class="settings-actions">
+            <button onclick="addNewLevel()">Add new level</button>
+            <button onclick="addBreak()">Add break</button>
+            <button onclick="saveSettings()">Save</button>
+            <button onclick="window.location.href='index.html'">Close</button>
+        </div>
+    </div>
+
+    <script>
+        let config;
+
+        function loadConfig() {
+            config = JSON.parse(localStorage.getItem('pokerConfig')) || [
+                { level: 1, time: 600, smallBlind: 10, bigBlind: 20, ante: 0 },
+                { level: 2, time: 600, smallBlind: 20, bigBlind: 40, ante: 0 },
+                { level: 3, time: 600, smallBlind: 30, bigBlind: 60, ante: 10 }
+            ];
+            populateSettingsTable();
+        }
+
+        function populateSettingsTable() {
+            const tableBody = document.getElementById('settingsTableBody');
+            tableBody.innerHTML = '';
+            config.forEach((levelConfig, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${levelConfig.level}</td>
+                    <td><input type="number" value="${levelConfig.smallBlind}" onchange="updateLevelConfig(${index}, 'smallBlind', this.value)"></td>
+                    <td><input type="number" value="${levelConfig.bigBlind}" onchange="updateLevelConfig(${index}, 'bigBlind', this.value)"></td>
+                    <td><input type="number" value="${levelConfig.ante}" onchange="updateLevelConfig(${index}, 'ante', this.value)"></td>
+                    <td><input type="number" value="${levelConfig.time / 60}" onchange="updateLevelConfig(${index}, 'time', this.value * 60)"> min</td>
+                    <td><button onclick="deleteLevel(${index})">❌</button></td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function updateLevelConfig(index, key, value) {
+            config[index][key] = parseInt(value, 10);
+        }
+
+        function addNewLevel() {
+            const newLevel = {
+                level: config.length + 1,
+                time: 600,
+                smallBlind: 10,
+                bigBlind: 20,
+                ante: 0
+            };
+            config.push(newLevel);
+            populateSettingsTable();
+        }
+
+        function addBreak() {
+            // Implement break functionality if required
+        }
+
+        function deleteLevel(index) {
+            config.splice(index, 1);
+            config.forEach((level, i) => level.level = i + 1); // Recalculate level numbers
+            populateSettingsTable();
+        }
+
+        function saveSettings() {
+            localStorage.setItem('pokerConfig', JSON.stringify(config));
+            alert('Settings saved!');
+        }
+
+        loadConfig();
+    </script>
+</body>
+</html>
