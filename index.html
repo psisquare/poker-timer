@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,15 +16,20 @@
             height: 100vh;
             margin: 0;
         }
+
         .clock-container {
             text-align: center;
         }
+
         .timer {
             font-size: 10rem;
         }
-        .blinds, .ante {
+
+        .blinds,
+        .ante {
             font-size: 2rem;
         }
+
         .play-button {
             background: none;
             border: none;
@@ -31,6 +37,7 @@
             font-size: 4rem;
             cursor: pointer;
         }
+
         .settings {
             position: absolute;
             top: 10px;
@@ -39,10 +46,14 @@
             text-decoration: none;
             color: white;
         }
-        .nav-buttons, .control-buttons {
+
+        .nav-buttons,
+        .control-buttons {
             margin-top: 20px;
         }
-        .nav-buttons button, .control-buttons button {
+
+        .nav-buttons button,
+        .control-buttons button {
             background: none;
             border: 1px solid white;
             color: white;
@@ -51,14 +62,18 @@
             cursor: pointer;
             margin: 0 10px;
         }
-        .nav-buttons button:disabled, .control-buttons button:disabled {
+
+        .nav-buttons button:disabled,
+        .control-buttons button:disabled {
             border-color: grey;
             color: grey;
             cursor: not-allowed;
         }
     </style>
 </head>
+
 <body>
+    <audio id="bellSound" src="bell.mp3"></audio>
     <div class="clock-container">
         <a href="settings.html" class="settings">Settings</a>
         <h1 id="roundTitle">Level 1</h1>
@@ -133,6 +148,9 @@
                         if (currentLevel < config.length - 1) {
                             setLevel(currentLevel + 1);
                             toggleTimer();
+                        } else {
+                            // Play bell sound when the last level finishes
+                            document.getElementById('bellSound').play();
                         }
                     }
                 }, 1000);
@@ -140,6 +158,7 @@
             }
             isRunning = !isRunning;
         }
+
 
         function updateNavButtons() {
             prevButton.disabled = currentLevel === 0;
@@ -173,6 +192,8 @@
             updateTimer();
         }
 
+
+
         playButton.addEventListener('click', toggleTimer);
         prevButton.addEventListener('click', prevLevel);
         nextButton.addEventListener('click', nextLevel);
@@ -181,4 +202,5 @@
         loadConfig();
     </script>
 </body>
+
 </html>
