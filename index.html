@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Poker Clock</title>
+    <title>Poker Clock - Free Poker Timer for Managing Poker Game Levels</title>
+    <meta name="description" content="Free customizable poker clock and timer for your poker games and tournaments. Set blinds, antes, and round durations easily.">
+    <meta name="keywords" content="poker clock, poker timer, tournament poker clock, free poker timer, poker blinds timer, customizable poker clock">
     <style>
         body {
             background-color: #333;
@@ -20,35 +22,35 @@
             text-align: center;
         }
         .timer {
-            font-size: 20rem;
+            font-size: 16rem;
         }
         .blinds, .ante {
-            font-size: 2rem;
+            font-size: 1.8rem;
         }
         .play-button {
             background: none;
             border: none;
             color: white;
-            font-size: 4rem;
+            font-size: 3rem;
             cursor: pointer;
         }
         .settings {
             position: absolute;
             top: 10px;
             right: 10px;
-            font-size: 1.5rem;
+            font-size: 1rem;
             text-decoration: none;
             color: white;
             cursor: pointer;
         }
         .nav-buttons, .control-buttons {
-            margin-top: 20px;
+            margin-top: 10px;
         }
         .nav-buttons button, .control-buttons button {
             background: none;
             border: 1px solid white;
             color: white;
-            font-size: 1.5rem;
+            font-size: 1rem;
             padding: 10px 20px;
             cursor: pointer;
             margin: 0 10px;
@@ -149,6 +151,37 @@
             font-size: 1.2rem;
             text-align: center;
         }
+
+        /* Responsive Styles */
+        @media (max-width: 600px) {
+            .timer {
+                font-size: 6rem;
+            }
+            .blinds, .ante {
+                font-size: 1.5rem;
+            }
+            .play-button, .nav-button, .reset-button {
+                font-size: 3rem;
+            }
+            .nav-button, .reset-button {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .timer {
+                font-size: 4rem;
+            }
+            .blinds, .ante {
+                font-size: 1.2rem;
+            }
+            .play-button, .nav-button, .reset-button {
+                font-size: 2.5rem;
+            }
+            .nav-button, .reset-button {
+                font-size: 1rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -197,7 +230,7 @@
                 </table>
                 <div class="settings-actions">
                     <button onclick="addNewLevel()">Add new level</button>
-                    <button onclick="addBreak()">Add break</button>
+                    <!-- <button onclick="addBreak()">Add break</button> -->
                     <button onclick="saveSettings()">Save</button>
                     <button onclick="closeSettingsModal()">Close</button>
                 </div>
